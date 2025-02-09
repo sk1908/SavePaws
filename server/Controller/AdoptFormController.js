@@ -1,57 +1,75 @@
+const AdoptForm = require('../Model/AdoptFormModel');
+const express = require('express');
+const asyncHandler = require('express-async-handler');
 
-const AdoptForm = require('../Model/AdoptFormModel')
-const express = require('express')
+const isValidObjectId = (id) => /^[0-9a-fA-F]{24}$/.test(id);
 
-const saveForm = async (req, res) => {
-    try {
-        const { email, livingSituation, phoneNo, previousExperience, familyComposition, petId } = req.body
-        const form = await AdoptForm.create({ email, livingSituation, phoneNo, previousExperience, familyComposition, petId })
+const saveForm = asyncHandler(async (req, res) => {
+    const { email, livingSituation, phoneNo, previousExperience, familyComposition, petId } = req.body;
 
-        res.status(200).json(form)
-    } catch (err) {
-        res.status(400).json({ message: err.message })
+    if (!email || !livingSituation || !phoneNo || !petId) {
+        return res.status(400).json({ message: 'Missing required fields' });
     }
-}
 
-const getAdoptForms = async (req, res) => {
-    try {
-        const forms = await AdoptForm.find().sort({ createdAt: -1 });
-        res.status(200).json(forms)
-    } catch (err) {
-        res.status(400).json({ message: err.message })
-    }
-}
+    const form = await AdoptForm.create({
+        email,
+        livingSituation,
+        phoneNo,
+        previousExperience,
+        familyComposition,
+        petId,
+    });
 
-const deleteForm = async (req, res) => {
-    try {
-        const { id } = req.params
-        const form = await AdoptForm.findByIdAndDelete(id)
-        if (!form) {
-            return res.status(404).json({ message: 'Form not found' })
-        }
-        res.status(200).json({ message: 'Form deleted successfully' })
-    } catch (err) {
-        res.status(400).json({ message: err.message })
-    }
-}
+    res.status(201).json(form);
+});
 
-const deleteAllRequests = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const result = await AdoptForm.deleteMany({ petId: id });
-        if (result.deletedCount === 0) {
-            console.log("Forms not found");
-            return res.status(404).json({ error: 'Forms not found' });
-        }
-        res.status(200).json({ message: 'Forms deleted successfully' });
-    } catch (error) {
-        res.status(400).json({ message: error.message });
+
+const getAdoptForms = asyncHandler(async (req, res) => {
+    const { page = 1, limit = 10 } = req.query; // Pagination parameters
+    const forms = await AdoptForm.find()
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(parseInt(limit));
+
+    res.status(200).json(forms);
+});
+
+const deleteForm = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    if (!isValidObjectId(id)) {
+        return res.status(400).json({ message: 'Invalid ID format' });
     }
-};
+
+    const form = await AdoptForm.findByIdAndDelete(id);
+
+    if (!form) {
+        return res.status(404).json({ message: 'Form not found' });
+    }
+
+    res.status(200).json({ message: 'Form deleted successfully' });
+});
+
+// Delete all requests for a specific pet
+const deleteAllRequests = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    if (!isValidObjectId(id)) {
+        return res.status(400).json({ message: 'Invalid pet ID format' });
+    }
+
+    const result = await AdoptForm.deleteMany({ petId: id });
+
+    if (result.deletedCount === 0) {
+        return res.status(404).json({ message: 'Forms not found for the specified pet' });
+    }
+
+    res.status(200).json({ message: 'Forms deleted successfully' });
+});
 
 module.exports = {
     saveForm,
     getAdoptForms,
     deleteForm,
-    deleteAllRequests
-}
+    deleteAllRequests,
+};
