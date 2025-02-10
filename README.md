@@ -31,7 +31,7 @@ SavePaws/ │── public/ # Static files (favicon, images, etc.) │── src
    npm install
    npm start
   
-##📌 Future Enhancements
-🔍 Advanced Search & Filters – Find pets based on breed, age, location, etc.
-💬 Chat Feature – Connect adopters with pet shelters via messaging.
-📝 Blog Section – Share pet care tips and success stories.
+## 📌 Future Enhancements
+ - 🔍 Advanced Search & Filters – Find pets based on breed, age, location, etc.
+ - 💬 Chat Feature – Connect adopters with pet shelters via messaging.
+ - 📝 Blog Section – Share pet care tips and success stories.
