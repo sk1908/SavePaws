@@ -35,3 +35,4 @@ SavePaws/ │── public/ # Static files (favicon, images, etc.) │── src
  - 🔍 Advanced Search & Filters – Find pets based on breed, age, location, etc.
  - 💬 Chat Feature – Connect adopters with pet shelters via messaging.
  - 📝 Blog Section – Share pet care tips and success stories.
+
