@@ -25,7 +25,6 @@ SavePaws/ │── public/ # Static files (favicon, images, etc.) │── src
 ## 📦 Installation
 
 1. **Clone the repository:**
-   ```sh
    git clone https://github.com/yourusername/SavePaws.git
    cd SavePaws
    npm install
